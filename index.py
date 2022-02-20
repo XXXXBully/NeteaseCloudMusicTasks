@@ -24,6 +24,10 @@ def md2text(data):
     data = re.sub(r'用户(\d+)', r'用户\1', data)
     return data
 
+def md2fullMd(data):
+    data = re.sub(r'\*\*(.*?)\*\*\n', r'#### \1\n', data)
+    data = re.sub(r'\t', r'- ', data)
+    return data
 
 def getSongNumber():
     res = {}
@@ -77,7 +81,7 @@ def start(event={}, context={}):
                 continue
             data = {
                 'title': user.title,
-                'mdmsg': user.msg,
+                'mdmsg': md2fullMd(user.msg),
                 'textmsg': md2text(user.msg),
                 'config': push
             }

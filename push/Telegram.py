@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
-import json
-
+import re
 
 def getKey(data):
     config = data['config']
@@ -11,10 +10,14 @@ def getKey(data):
 
 
 def push(title, mdmsg, textmsg, config):
-    msg = mdmsg
+    msg = mdmsg.replace(r'#### ', r'\t')
+    msg = re.sub(r'### (.*?)\n', r'\*\1\*\n', msg)
     if len(config['userId']) == 0 or len(config['botToken']) == 0:
         return
 
     url = 'https://api.telegram.org/bot' + config['botToken'] + '/sendMessage'
-    requests.post(url, data={'chat_id': config['userId'], 'text': msg}, headers={
+    ret = requests.get(url, data={'chat_id': config['userId'], 'text': msg, 'parse_mode': "MarkdownV2"}, headers={
                   'Content-Type': 'application/x-www-form-urlencoded'})
+    print('Telegram response: \n', ret.status_code)
+    if ret.status_code != 200:
+        print(ret.content.decode('utf-8'))
