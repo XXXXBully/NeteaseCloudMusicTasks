@@ -13,6 +13,7 @@ def start(user, task={}):
 
     songId = random.choice(task['songId'])
     song_resp = music.songs_detail([songId])
+    url = ''
     if song_resp['code'] == 200 and len(song_resp['songs']) > 0:
         song = song_resp['songs'][0]
         songName = song['name']
@@ -51,6 +52,8 @@ def start(user, task={}):
     resp = music.mlog_pub(token, size, size, songId, songName, text)
     if resp['code'] != 200:
         user.taskInfo(task['taskName'], user.errMsg(resp))
+        os.remove(filepath)
+        return
 
     if task.get('delete', True) == True:
         time.sleep(0.5)
